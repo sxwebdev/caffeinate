@@ -10,10 +10,11 @@ import Foundation
 import SwiftUI
 
 class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
-    // Both symbols exist since macOS 11 and are light outlines, so switching between
-    // them does not read as one glyph being swapped for an unrelated picture.
+    // Both symbols exist since macOS 11. The filled cup no longer sits next to an
+    // outlined version of itself, so the weight difference reads as a state change
+    // rather than as one glyph being swapped for an unrelated picture.
     private static let inactiveSymbolName = "zzz"
-    private static let activeSymbolName = "cup.and.saucer"
+    private static let activeSymbolName = "cup.and.saucer.fill"
 
     private static var inactiveDescription: String {
         NSLocalizedString("Caffeinate is not active", comment: "Status item tooltip")
