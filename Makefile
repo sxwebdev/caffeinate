@@ -102,7 +102,13 @@ uninstall:
 			echo "         System Settings > General > Login Items."; \
 		fi
 	rm -rf "$(INSTALLED)"
-	rm -rf "$(CONTAINER)"
+	# Since macOS 14 another app's container counts as protected app data, so deleting
+	# it needs Full Disk Access for whatever is running make. Report that instead of
+	# failing the target: the app itself is already gone by this point.
+	@if [ -d "$(CONTAINER)" ] && ! rm -rf "$(CONTAINER)" 2>/dev/null; then \
+		echo "note: could not remove $(CONTAINER)."; \
+		echo "      Grant Full Disk Access to your terminal, or remove it with sudo."; \
+	fi
 	@echo "Removed $(INSTALLED)"
 
 ## Remove build products, including their LaunchServices registrations
