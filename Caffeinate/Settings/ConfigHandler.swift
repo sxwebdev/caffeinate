@@ -47,15 +47,6 @@ enum SleepMode: String, CaseIterable, Identifiable {
         case .allowDisplaySleep: return kIOPMAssertionTypePreventUserIdleSystemSleep
         }
     }
-
-    /// Tried in order: the first name the running system knows wins. Lets us use
-    /// newer symbols without breaking the macOS 11 deployment target.
-    var activeSymbolNames: [String] {
-        switch self {
-        case .keepDisplayOn: return ["cup.and.saucer.fill"]
-        case .allowDisplaySleep: return ["mug.fill", "moon.zzz.fill", "cup.and.saucer.fill"]
-        }
-    }
 }
 
 /// How long Caffeinate stays active before switching itself off, as a whole number
@@ -116,9 +107,11 @@ final class ConfigHandler {
     )
 
     private let defaults: UserDefaults
+    private let loginItem: LoginItemManaging
 
-    init(defaults: UserDefaults = .standard) {
+    init(defaults: UserDefaults = .standard, loginItem: LoginItemManaging = SystemLoginItem()) {
         self.defaults = defaults
+        self.loginItem = loginItem
     }
 
     var sleepMode: SleepMode {
@@ -143,30 +136,73 @@ final class ConfigHandler {
 
     // MARK: - Login item
 
-    var isLoginItemSupported: Bool {
-        if #available(macOS 13.0, *) { return true }
-        return false
+    /// What actually happened, so the caller can react instead of guessing.
+    enum LoginItemOutcome: Equatable {
+        case enabled
+        case disabled
+        /// Registration went through but the user has to approve it by hand.
+        case needsApproval
+        case failed
+        case unsupported
     }
 
-    var atLogin: Bool {
-        guard #available(macOS 13.0, *) else { return false }
-        return SMAppService.mainApp.status == .enabled
-    }
+    /// Read this once and derive from it rather than calling the three helpers below in
+    /// a row: every read is a synchronous round trip to launchd, and independent reads
+    /// can disagree halfway through building a menu.
+    var loginItemState: LoginItemState { loginItem.state }
 
-    /// Returns the state the system actually ended up in, so a failure cannot
-    /// leave the menu claiming something untrue.
+    var isLoginItemSupported: Bool { loginItemState != .unsupported }
+
+    /// Only `.enabled` really launches at login. `.requiresApproval` means the user
+    /// switched it off in System Settings, so reporting it as on would be a lie.
+    var atLogin: Bool { loginItemState == .enabled }
+
+    /// Registered yet switched off by the user. The menu has to show this, otherwise
+    /// clicking the row looks like it did nothing at all.
+    var loginItemNeedsApproval: Bool { loginItemState == .requiresApproval }
+
+    /// Flips the login item. The direction comes from whether it is registered at all,
+    /// not from `atLogin`: `.requiresApproval` reports as not-on, so keying off that
+    /// would only ever call register() and the state could never be cleared.
     @discardableResult
-    func setAtLogin(_ enabled: Bool) -> Bool {
-        guard #available(macOS 13.0, *) else { return false }
+    func toggleAtLogin() -> LoginItemOutcome {
+        setAtLogin(!loginItem.state.isRegistered)
+    }
+
+    /// Reports the state the system actually ended up in, so a failure or a pending
+    /// approval cannot leave the menu claiming something untrue.
+    @discardableResult
+    func setAtLogin(_ enabled: Bool) -> LoginItemOutcome {
+        guard loginItem.state != .unsupported else { return .unsupported }
         do {
             if enabled {
-                try SMAppService.mainApp.register()
+                try loginItem.register()
             } else {
-                try SMAppService.mainApp.unregister()
+                try loginItem.unregister()
             }
         } catch {
             Self.logger.error("Failed to update the login item: \(error.localizedDescription, privacy: .public)")
+            // register() throws for an already-registered service, which is exactly the
+            // awaiting-approval case. Reporting a blanket failure here would turn it
+            // back into a silent no-op, so judge by the resulting state instead.
+            return outcome(requested: enabled)
         }
-        return atLogin
+        return outcome(requested: enabled)
+    }
+
+    /// The outcome depends on the direction asked for, not only on where we ended up:
+    /// landing on `.requiresApproval` is progress for an enable request and a failure
+    /// for a disable request.
+    private func outcome(requested enabled: Bool) -> LoginItemOutcome {
+        switch loginItem.state {
+        case .unsupported: return .unsupported
+        case .enabled: return enabled ? .enabled : .failed
+        case .requiresApproval: return enabled ? .needsApproval : .failed
+        case .notRegistered, .notFound: return enabled ? .failed : .disabled
+        }
+    }
+
+    func openLoginItemSettings() {
+        loginItem.openSystemSettings()
     }
 }

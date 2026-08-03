@@ -11,6 +11,7 @@
 "Custom…" = "自定义…";
 "Activate on Launch" = "启动时自动启用";
 "Start at Login" = "登录时启动";
+"Waiting for your approval in System Settings › General › Login Items." = "等待你在“系统设置”›“通用”›“登录项”中批准。";
 "Requires macOS 13 or later. Add the app to Login Items in System Settings instead." = "需要 macOS 13 或更高版本。请在“系统设置”的“登录项”中手动添加此应用。";
 "About Caffeinate…" = "关于 Caffeinate…";
 "Quit Caffeinate" = "退出 Caffeinate";

@@ -11,6 +11,7 @@
 "Custom…" = "カスタム…";
 "Activate on Launch" = "起動時に有効にする";
 "Start at Login" = "ログイン時に開く";
+"Waiting for your approval in System Settings › General › Login Items." = "「システム設定」›「一般」›「ログイン項目」での承認をお待ちしています。";
 "Requires macOS 13 or later. Add the app to Login Items in System Settings instead." = "macOS 13 以降が必要です。「システム設定」の「ログイン項目」に手動で追加してください。";
 "About Caffeinate…" = "Caffeinate について…";
 "Quit Caffeinate" = "Caffeinate を終了";

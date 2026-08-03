@@ -11,6 +11,7 @@
 "Custom…" = "Своё значение…";
 "Activate on Launch" = "Включать при запуске";
 "Start at Login" = "Запускать при входе в систему";
+"Waiting for your approval in System Settings › General › Login Items." = "Ожидает вашего подтверждения в Системных настройках › Основные › Объекты входа.";
 "Requires macOS 13 or later. Add the app to Login Items in System Settings instead." = "Требуется macOS 13 или новее. Добавьте приложение в «Объекты входа» в Системных настройках вручную.";
 "About Caffeinate…" = "О программе Caffeinate…";
 "Quit Caffeinate" = "Выйти из Caffeinate";

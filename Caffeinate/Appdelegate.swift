@@ -10,7 +10,10 @@ import Foundation
 import SwiftUI
 
 class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
-    private static let inactiveSymbolName = "cup.and.saucer"
+    // Both symbols exist since macOS 11 and are light outlines, so switching between
+    // them does not read as one glyph being swapped for an unrelated picture.
+    private static let inactiveSymbolName = "zzz"
+    private static let activeSymbolName = "cup.and.saucer"
 
     private static var inactiveDescription: String {
         NSLocalizedString("Caffeinate is not active", comment: "Status item tooltip")
@@ -34,6 +37,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         item.menu = menu
         statusBarItem = item
 
+        installMainMenu()
+
         if config.activateOnLaunch {
             startBlocking()
         }
@@ -43,6 +48,41 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     func applicationWillTerminate(_ notification: Notification) {
         cancelExpiryTimer()
         blocker.deactivate()
+    }
+
+    /// An accessory app shows no menu bar, but AppKit still routes key equivalents
+    /// through the main menu. Without one, ⌘X/⌘C/⌘V/⌘A are dead in the custom-delay
+    /// text field and ⌘W/⌘Q do nothing while the About window is focused. The titles
+    /// are never displayed anywhere, so they are deliberately not localized.
+    private func installMainMenu() {
+        let editMenu = NSMenu()
+        let editing: [(String, String, String)] = [
+            ("Undo", "undo:", "z"),
+            ("Redo", "redo:", "Z"),
+            ("Cut", "cut:", "x"),
+            ("Copy", "copy:", "c"),
+            ("Paste", "paste:", "v"),
+            ("Select All", "selectAll:", "a"),
+        ]
+        for (title, selector, key) in editing {
+            // String selectors: these are responder-chain actions, not methods on any
+            // one type, and #selector(NSText.copy(_:)) collides with NSObject.copy().
+            editMenu.addItem(withTitle: title, action: Selector((selector)), keyEquivalent: key)
+        }
+
+        let windowMenu = NSMenu()
+        windowMenu.addItem(withTitle: "Close", action: #selector(NSWindow.performClose(_:)), keyEquivalent: "w")
+
+        let appMenu = NSMenu()
+        appMenu.addItem(withTitle: "Quit", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+
+        let mainMenu = NSMenu()
+        for submenu in [appMenu, editMenu, windowMenu] {
+            let holder = NSMenuItem()
+            holder.submenu = submenu
+            mainMenu.addItem(holder)
+        }
+        NSApp.mainMenu = mainMenu
     }
 
     // MARK: - Menu
@@ -86,17 +126,31 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             state: config.activateOnLaunch ? .on : .off
         ))
 
+        // Read the login-item state once: every query is a synchronous round trip to
+        // launchd, and three independent reads could disagree mid-build.
+        let loginState = config.loginItemState
         let loginItem = actionItem(
             title: NSLocalizedString("Start at Login", comment: "Menu toggle"),
             action: #selector(toggleAtLogin),
-            state: config.atLogin ? .on : .off
+            state: loginState == .enabled ? .on : .off
         )
-        if !config.isLoginItemSupported {
+        switch loginState {
+        case .unsupported:
             loginItem.isEnabled = false
             loginItem.toolTip = NSLocalizedString(
                 "Requires macOS 13 or later. Add the app to Login Items in System Settings instead.",
                 comment: "Tooltip on the disabled login-item row"
             )
+        case .requiresApproval:
+            // Registered but switched off by the user, so neither a checkmark nor an
+            // empty box describes it. A dash does, and the tooltip says what to do.
+            loginItem.state = .mixed
+            loginItem.toolTip = NSLocalizedString(
+                "Waiting for your approval in System Settings › General › Login Items.",
+                comment: "Tooltip when the login item is registered but not yet approved"
+            )
+        case .enabled, .notRegistered, .notFound:
+            break
         }
         menu.addItem(loginItem)
 
@@ -237,9 +291,18 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     @objc private func toggleAtLogin() {
-        // The menu re-reads the real state the next time it opens, so a failed
-        // register or unregister cannot leave a stale checkmark behind.
-        config.setAtLogin(!config.atLogin)
+        // The direction is decided inside ConfigHandler, which keys off "is it
+        // registered" rather than "is it enabled" so the awaiting-approval state can
+        // actually be cleared. The outcome has to be inspected because register()
+        // returns without throwing even when the item stays switched off.
+        switch config.toggleAtLogin() {
+        case .needsApproval:
+            config.openLoginItemSettings()
+        case .enabled, .disabled, .failed, .unsupported:
+            // The menu re-reads the real state on the next open, so a failure cannot
+            // leave a stale checkmark behind; the error itself is already logged.
+            break
+        }
     }
 
     @objc private func showAbout() {
@@ -309,21 +372,22 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     private func refreshStatusItem() {
         let active = blocker.isActive
-        let mode = blocker.mode ?? config.sleepMode
-        let description = active ? mode.activeStatusDescription : Self.inactiveDescription
-        let names = active ? mode.activeSymbolNames : [Self.inactiveSymbolName]
-        statusBarItem?.button?.image = Self.symbolImage(names: names, description: description)
+        // The icon carries exactly one bit, on or off. The mode is deliberately not
+        // encoded here: a per-mode glyph changed the drawn object rather than its
+        // state, which read as an unrelated picture being pasted in. The tooltip
+        // still names the mode.
+        let description = active
+            ? (blocker.mode ?? config.sleepMode).activeStatusDescription
+            : Self.inactiveDescription
+        let image = NSImage(
+            systemSymbolName: active ? Self.activeSymbolName : Self.inactiveSymbolName,
+            accessibilityDescription: description
+        )
+        statusBarItem?.button?.image = image
+        // The status item is the app's only UI, and a nil image renders zero-width and
+        // unclickable — leaving no way to quit but pkill. Both symbols ship with
+        // macOS 11, so this should never trigger; it costs one line to not gamble.
+        statusBarItem?.button?.title = image == nil ? "☕" : ""
         statusBarItem?.button?.toolTip = description
-    }
-
-    /// Falls through the candidate list so a symbol introduced after macOS 11 can be
-    /// preferred without breaking older systems.
-    private static func symbolImage(names: [String], description: String) -> NSImage? {
-        for name in names {
-            if let image = NSImage(systemSymbolName: name, accessibilityDescription: description) {
-                return image
-            }
-        }
-        return nil
     }
 }

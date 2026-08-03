@@ -11,6 +11,7 @@
 "Custom…" = "Personnalisé…";
 "Activate on Launch" = "Activer au lancement";
 "Start at Login" = "Ouvrir à la connexion";
+"Waiting for your approval in System Settings › General › Login Items." = "En attente de votre autorisation dans Réglages Système › Général › Ouverture.";
 "Requires macOS 13 or later. Add the app to Login Items in System Settings instead." = "Nécessite macOS 13 ou version ultérieure. Ajoutez l'app manuellement aux ouvertures de session dans les Réglages Système.";
 "About Caffeinate…" = "À propos de Caffeinate…";
 "Quit Caffeinate" = "Quitter Caffeinate";

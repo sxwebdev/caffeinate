@@ -236,13 +236,18 @@ final class SleepBlockerTests: XCTestCase {
         XCTAssertNotEqual(AutoOffDelay(minutes: 15).title, AutoOffDelay.never.title)
     }
 
-    func testEveryModeHasATitleSymbolAndStableRawValue() {
+    func testEveryModeHasDistinctTitlesAndAStableRawValue() {
         for mode in SleepMode.allCases {
             XCTAssertFalse(mode.title.isEmpty)
             XCTAssertFalse(mode.activeStatusDescription.isEmpty)
-            XCTAssertFalse(mode.activeSymbolNames.isEmpty, "the status item needs at least one symbol candidate")
             XCTAssertEqual(SleepMode(rawValue: mode.rawValue), mode)
         }
+        // The tooltip is the only place the mode is surfaced now that the status item
+        // icon no longer differs per mode, so the two must not read the same.
+        XCTAssertNotEqual(
+            SleepMode.keepDisplayOn.activeStatusDescription,
+            SleepMode.allowDisplaySleep.activeStatusDescription
+        )
         XCTAssertNotEqual(
             SleepMode.keepDisplayOn.assertionType,
             SleepMode.allowDisplaySleep.assertionType,
