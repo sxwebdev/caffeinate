@@ -59,13 +59,71 @@ System Settings by hand.
 
 ## Installation
 
+### Homebrew
+
+```sh
+brew tap sxwebdev/caffeinate https://github.com/sxwebdev/caffeinate
+brew trust --tap sxwebdev/caffeinate
+brew install --cask caffeinate
+```
+
+The cask lives in this repository instead of a separate `homebrew-*` one, which is why
+the tap needs a URL. Homebrew will not load anything from a tap it has not been told to
+trust, hence the second line.
+
+`brew upgrade --cask caffeinate` installs newer versions. The release workflow bumps
+the cask as soon as a tag is built, so `brew update` is enough to notice one.
+
+Builds are signed ad hoc: the project has no Apple Developer certificate, so there is
+no Developer ID to sign with and nothing to notarize with either, and Gatekeeper
+refuses to launch a quarantined ad-hoc bundle. The cask therefore removes the
+quarantine flag Homebrew attaches to every download — without that the app would have
+to be approved in System Settings > Privacy & Security after every install and every
+upgrade. Trusting the tap is the point at which you agree to that; if you would rather
+not, build from source instead.
+
+Removal:
+
+```sh
+brew uninstall --cask caffeinate          # leaves preferences behind
+brew uninstall --zap --cask caffeinate    # also removes the sandbox container
+```
+
+Turn _Start at login_ off in the menu first if it was on. Homebrew runs a cask's
+uninstall steps on upgrades too, so the cask deliberately leaves the login item alone —
+otherwise every upgrade would quietly switch the setting off. Deleting the sandbox
+container needs Full Disk Access for your terminal; without it Homebrew falls back to
+`sudo`.
+
+### From source
+
 `make install` builds a signed Release, installs it into `/Applications` and launches
 it. The signing identity is resolved from your keychain, falling back to an ad-hoc
 signature when no certificate is present. Other targets: `make build`, `make test`,
 `make run`, `make stop`, `make uninstall`, `make clean`.
 
-Alternatively download a compiled version from
-[releases](https://github.com/sxwebdev/caffeinate/releases).
+### Download
+
+The ZIP attached to each [release](https://github.com/sxwebdev/caffeinate/releases)
+contains `Caffeinate.app`. Since it is only signed ad hoc, macOS will not open it until
+the quarantine flag is gone:
+
+```sh
+xattr -d -r com.apple.quarantine /Applications/Caffeinate.app
+```
+
+## Releases
+
+`make release TAG=v1.2.3` tags the current commit and pushes the tag; that is the whole
+procedure. The release workflow then runs the tests, builds a universal Release with
+`CFBundleShortVersionString` taken from the tag and `CFBundleVersion` from the workflow
+run number, packages it with `ditto` so the signature survives, attaches the ZIP to a
+GitHub release, and pushes the matching `Casks/caffeinate.rb` bump to `master`. Only
+the built-in `GITHUB_TOKEN` is used — there are no secrets to configure and no Apple
+account involved.
+
+`make dist VERSION=1.2.3` builds the same ZIP locally if you want to look at one before
+tagging.
 
 ## FAQ
 

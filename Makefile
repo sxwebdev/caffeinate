@@ -9,6 +9,18 @@ INSTALL_DIR  := /Applications
 INSTALLED    := $(INSTALL_DIR)/$(APP_NAME).app
 ENTITLEMENTS := $(APP_NAME)/$(APP_NAME).entitlements
 CONTAINER    := $(HOME)/Library/Containers/$(BUNDLE_ID)
+DIST_DIR     := dist
+CASK         := Casks/caffeinate.rb
+
+# Empty by default, so a local build keeps whatever the project file says. The
+# release workflow passes the tag as VERSION and its run number as BUILD_NUMBER,
+# which is the only counter that grows on its own for CFBundleVersion.
+VERSION      ?=
+BUILD_NUMBER ?=
+VERSION_SETTINGS := $(if $(strip $(VERSION)),MARKETING_VERSION=$(VERSION))
+VERSION_SETTINGS += $(if $(strip $(BUILD_NUMBER)),CURRENT_PROJECT_VERSION=$(BUILD_NUMBER))
+
+ZIP := $(DIST_DIR)/$(APP_NAME)-$(VERSION).zip
 
 # Resolved from the keychain so no personal identifier is committed.
 # Override with: make install SIGN_IDENTITY="Developer ID Application: ..."
@@ -23,7 +35,8 @@ TEAM_ID ?= $(shell security find-certificate -c "$(SIGN_IDENTITY)" -p 2>/dev/nul
 
 LSREGISTER := /System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/Support/lsregister
 
-.PHONY: all build test install uninstall run stop clean release drop-app-products
+.PHONY: all build test install uninstall run stop clean release drop-app-products \
+	dist bump-cask require-version
 
 all: build
 
@@ -57,6 +70,7 @@ build:
 		CODE_SIGN_IDENTITY="$(SIGN_IDENTITY)" \
 		DEVELOPMENT_TEAM="$(TEAM_ID)" \
 		PROVISIONING_PROFILE_SPECIFIER="" \
+		$(VERSION_SETTINGS) \
 		build
 
 ## Build, install into /Applications and launch
@@ -124,8 +138,48 @@ clean:
 		"$(LSREGISTER)" -u "$(BUILD_DIR)/Build/Products/$$cfg/$(APP_NAME).app" >/dev/null 2>&1 || true; \
 	done
 
-## Tag and push a release
+require-version:
+	@if [ -z "$(strip $(VERSION))" ]; then \
+		echo "VERSION is required, e.g. make $(MAKECMDGOALS) VERSION=1.2.3"; exit 1; \
+	fi
+
+## Package the Release build as dist/Caffeinate-$(VERSION).zip plus its checksum
+# ditto rather than zip: it keeps the bundle's symlinks and extended attributes, and
+# a round trip that loses them invalidates the code signature. --keepParent puts
+# Caffeinate.app at the root of the archive, which is what the cask's `app` stanza
+# expects to find.
+dist: require-version build
+	rm -rf "$(DIST_DIR)"
+	mkdir -p "$(DIST_DIR)"
+	ditto -c -k --keepParent "$(APP_BUNDLE)" "$(ZIP)"
+	@$(MAKE) --no-print-directory drop-app-products
+	shasum -a 256 "$(ZIP)" | tee "$(ZIP).sha256"
+
+## Point the Homebrew cask at VERSION and the checksum of the packaged zip
+# Only the two generated lines are rewritten, so the rest of the cask stays
+# hand-maintained. Both substitutions are read back afterwards: a silently
+# unmatched sed would otherwise publish a release the cask still cannot install.
+bump-cask: require-version
+	@test -f "$(ZIP)" || { echo "$(ZIP) not found. Run: make dist VERSION=$(VERSION)"; exit 1; }
+	@sha=$$(shasum -a 256 "$(ZIP)" | cut -d ' ' -f 1); \
+		/usr/bin/sed -i '' \
+			-e 's|^  version ".*"$$|  version "$(VERSION)"|' \
+			-e "s|^  sha256 \".*\"$$|  sha256 \"$$sha\"|" \
+			"$(CASK)"; \
+		grep -q '^  version "$(VERSION)"$$' "$(CASK)" || \
+			{ echo "$(CASK): the version line was not rewritten"; exit 1; }; \
+		grep -q "^  sha256 \"$$sha\"$$" "$(CASK)" || \
+			{ echo "$(CASK): the sha256 line was not rewritten"; exit 1; }
+	ruby -c "$(CASK)" >/dev/null
+	@echo "$(CASK) now describes $(VERSION)"
+
+## Tag and push a release, which the release workflow builds and publishes
 release:
 	@if [ -z "$(TAG)" ]; then echo "Usage: make release TAG=v1.2.3"; exit 1; fi
+	@# The workflow stamps CFBundleShortVersionString from the tag and Apple accepts
+	@# at most three integers there, so reject anything else now rather than after
+	@# the tag is already public.
+	@printf '%s' "$(TAG)" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$$' || \
+		{ echo "TAG must look like v1.2.3"; exit 1; }
 	git tag -a $(TAG) -m "Release $(TAG)"
 	git push origin $(TAG)

@@ -58,6 +58,9 @@ DerivedData/
 *.dSYM.zip
 *.dSYM
 
+## Release artifacts built by `make dist`
+dist/
+
 ## Playgrounds
 timeline.xctimeline
 playground.xcworkspace

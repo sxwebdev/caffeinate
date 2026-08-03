@@ -1,0 +1,83 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+# Two releases running at once would race on the cask commit.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Build, publish and bump the cask
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Read the version from the tag
+        id: v
+        run: |
+          set -euo pipefail
+          version="${GITHUB_REF_NAME#v}"
+          # CFBundleShortVersionString accepts at most three integers, and the tag is
+          # where it comes from, so anything else has to stop here.
+          if ! printf '%s' "$version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::error::tag '$GITHUB_REF_NAME' is not vMAJOR.MINOR.PATCH"
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Test
+        run: make test
+
+      # CFBundleVersion has to increase for every build of a given marketing version,
+      # and the run number is the only counter that does that without extra state.
+      - name: Package
+        run: |
+          make dist \
+            VERSION='${{ steps.v.outputs.version }}' \
+            BUILD_NUMBER='${{ github.run_number }}'
+
+      # Publish before bumping the cask: the cask's URL has to resolve by the time
+      # anyone can see the new version.
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          gh release create "$GITHUB_REF_NAME" \
+            --title "$GITHUB_REF_NAME" \
+            --generate-notes \
+            "dist/Caffeinate-${{ steps.v.outputs.version }}.zip"
+
+      # The cask lives on the default branch; the tag is only a build input. The bump
+      # has to land there or `brew upgrade` never sees the new version.
+      - name: Bump the cask on the default branch
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          VERSION: ${{ steps.v.outputs.version }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Spelled-out refspec: the checkout was a tag, so origin/<branch> does not
+          # necessarily exist yet and a bare `git fetch origin <branch>` would only
+          # move FETCH_HEAD.
+          git fetch --no-tags origin \
+            "+refs/heads/$DEFAULT_BRANCH:refs/remotes/origin/$DEFAULT_BRANCH"
+          git checkout -B "$DEFAULT_BRANCH" "origin/$DEFAULT_BRANCH"
+          make bump-cask VERSION="$VERSION"
+          if git diff --quiet -- Casks/caffeinate.rb; then
+            echo "The cask already describes $VERSION; nothing to push."
+            exit 0
+          fi
+          git add Casks/caffeinate.rb
+          git commit -m "chore(cask): release $VERSION [skip ci]"
+          git push origin "$DEFAULT_BRANCH"

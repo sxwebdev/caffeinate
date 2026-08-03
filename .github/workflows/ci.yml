@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Test and build
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Show the toolchain
+        run: xcodebuild -version
+
+      - name: Test
+        run: make test
+
+      # No signing identity exists on the runner, so the Makefile falls back to an
+      # ad-hoc signature — the same thing a release build gets. This proves the
+      # Release configuration still links and signs, which `make test` (Debug) does not.
+      - name: Build
+        run: make build
+
+      # A broken cask is only noticed when somebody tries to install it, so at least
+      # check that the file still parses.
+      - name: Check that the cask parses
+        run: ruby -c Casks/caffeinate.rb
