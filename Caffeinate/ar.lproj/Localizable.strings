@@ -1,0 +1,36 @@
+/* Status item tooltip */
+"Caffeinate is not active" = "Caffeinate غير مُفعَّل";
+"Caffeinate is active — the display stays on" = "Caffeinate مُفعَّل — تبقى الشاشة مضاءة";
+"Caffeinate is active — the system stays awake" = "Caffeinate مُفعَّل — يبقى النظام مستيقظًا";
+
+/* Menu */
+"Keep the Mac awake" = "منع الـ Mac من السكون";
+"Turns off in %@" = "سيتوقف بعد %@";
+"Mode" = "الوضع";
+"Turn Off After" = "الإيقاف بعد";
+"Custom…" = "مخصص…";
+"Activate on Launch" = "التفعيل عند التشغيل";
+"Start at Login" = "الفتح عند تسجيل الدخول";
+"Requires macOS 13 or later. Add the app to Login Items in System Settings instead." = "يتطلب macOS 13 أو أحدث. أضف التطبيق يدويًا إلى عناصر تسجيل الدخول في إعدادات النظام.";
+"About Caffeinate…" = "حول Caffeinate…";
+"Quit Caffeinate" = "إنهاء Caffeinate";
+
+/* Sleep modes */
+"Keep the display on" = "إبقاء الشاشة مضاءة";
+"Let the display sleep" = "السماح للشاشة بالإطفاء";
+
+/* Auto-off delay (other durations come from DateComponentsFormatter) */
+"Indefinitely" = "بلا حد زمني";
+
+/* Custom duration prompt */
+"Turn off after" = "الإيقاف بعد";
+"Enter a number of minutes between 1 and %d." = "أدخل عددًا من الدقائق بين 1 و %d.";
+"Set" = "تعيين";
+"Cancel" = "إلغاء";
+
+/* About window */
+"About Caffeinate" = "حول Caffeinate";
+"Version: %@" = "الإصدار: %@";
+"Author: sxwebdev" = "المؤلف: sxwebdev";
+"GitHub" = "GitHub";
+"Caffeinate app icon" = "رمز تطبيق Caffeinate";

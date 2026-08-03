@@ -1,0 +1,36 @@
+/* Status item tooltip */
+"Caffeinate is not active" = "Caffeinate is not active";
+"Caffeinate is active — the display stays on" = "Caffeinate is active — the display stays on";
+"Caffeinate is active — the system stays awake" = "Caffeinate is active — the system stays awake";
+
+/* Menu */
+"Keep the Mac awake" = "Keep the Mac awake";
+"Turns off in %@" = "Turns off in %@";
+"Mode" = "Mode";
+"Turn Off After" = "Turn Off After";
+"Custom…" = "Custom…";
+"Activate on Launch" = "Activate on Launch";
+"Start at Login" = "Start at Login";
+"Requires macOS 13 or later. Add the app to Login Items in System Settings instead." = "Requires macOS 13 or later. Add the app to Login Items in System Settings instead.";
+"About Caffeinate…" = "About Caffeinate…";
+"Quit Caffeinate" = "Quit Caffeinate";
+
+/* Sleep modes */
+"Keep the display on" = "Keep the display on";
+"Let the display sleep" = "Let the display sleep";
+
+/* Auto-off delay (other durations come from DateComponentsFormatter) */
+"Indefinitely" = "Indefinitely";
+
+/* Custom duration prompt */
+"Turn off after" = "Turn off after";
+"Enter a number of minutes between 1 and %d." = "Enter a number of minutes between 1 and %d.";
+"Set" = "Set";
+"Cancel" = "Cancel";
+
+/* About window */
+"About Caffeinate" = "About Caffeinate";
+"Version: %@" = "Version: %@";
+"Author: sxwebdev" = "Author: sxwebdev";
+"GitHub" = "GitHub";
+"Caffeinate app icon" = "Caffeinate app icon";

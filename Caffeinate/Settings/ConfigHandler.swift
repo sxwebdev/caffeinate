@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Combine
 import ServiceManagement
 import AppKit
 import IOKit.pwr_mgt
@@ -23,75 +22,144 @@ enum SleepMode: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .keepDisplayOn: return "Keep the display on"
-        case .allowDisplaySleep: return "Let the display sleep"
+        case .keepDisplayOn:
+            return NSLocalizedString("Keep the display on", comment: "Sleep mode menu item")
+        case .allowDisplaySleep:
+            return NSLocalizedString("Let the display sleep", comment: "Sleep mode menu item")
         }
     }
 
-    var explanation: String {
+    /// Shown as the status item tooltip while this mode is holding the Mac awake.
+    /// Kept as one whole sentence per mode so translations are not forced to
+    /// assemble a phrase out of fragments.
+    var activeStatusDescription: String {
         switch self {
         case .keepDisplayOn:
-            return "The display stays lit. Keeping it on also keeps the system awake."
+            return NSLocalizedString("Caffeinate is active — the display stays on", comment: "Status item tooltip")
         case .allowDisplaySleep:
-            return "The display switches off on its own while the system keeps running, so background work carries on."
+            return NSLocalizedString("Caffeinate is active — the system stays awake", comment: "Status item tooltip")
         }
     }
 
-    var assertionType: CFString {
+    var assertionType: String {
         switch self {
-        case .keepDisplayOn:
-            return kIOPMAssertionTypePreventUserIdleDisplaySleep as CFString
-        case .allowDisplaySleep:
-            return kIOPMAssertionTypePreventUserIdleSystemSleep as CFString
+        case .keepDisplayOn: return kIOPMAssertionTypePreventUserIdleDisplaySleep
+        case .allowDisplaySleep: return kIOPMAssertionTypePreventUserIdleSystemSleep
+        }
+    }
+
+    /// Tried in order: the first name the running system knows wins. Lets us use
+    /// newer symbols without breaking the macOS 11 deployment target.
+    var activeSymbolNames: [String] {
+        switch self {
+        case .keepDisplayOn: return ["cup.and.saucer.fill"]
+        case .allowDisplaySleep: return ["mug.fill", "moon.zzz.fill", "cup.and.saucer.fill"]
         }
     }
 }
 
-final class ConfigHandler: ObservableObject {
+/// How long Caffeinate stays active before switching itself off, as a whole number
+/// of minutes. Zero means no timer at all.
+struct AutoOffDelay: Equatable, Hashable {
+    static let maxMinutes = 24 * 60
+
+    let minutes: Int
+
+    /// Out-of-range input is clamped rather than rejected, so neither a stale
+    /// preference nor a typed value can ask the kernel for a nonsense timeout.
+    init(minutes: Int) {
+        self.minutes = min(max(0, minutes), Self.maxMinutes)
+    }
+
+    static let never = AutoOffDelay(minutes: 0)
+
+    static let presets: [AutoOffDelay] = [
+        never,
+        AutoOffDelay(minutes: 15),
+        AutoOffDelay(minutes: 30),
+        AutoOffDelay(minutes: 60),
+        AutoOffDelay(minutes: 120),
+    ]
+
+    var isNever: Bool { minutes == 0 }
+
+    var seconds: TimeInterval? { isNever ? nil : TimeInterval(minutes) * 60 }
+
+    /// Durations come from DateComponentsFormatter rather than our own strings
+    /// files: it already knows every language's plural rules, which is what makes
+    /// an arbitrary user-entered number safe to display in any localization.
+    var title: String {
+        guard !isNever else {
+            return NSLocalizedString("Indefinitely", comment: "Auto-off delay menu item")
+        }
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.hour, .minute]
+        formatter.unitsStyle = .full
+        formatter.zeroFormattingBehavior = .dropAll
+        return formatter.string(from: TimeInterval(minutes) * 60) ?? String(minutes)
+    }
+}
+
+/// Preferences. Scalar values live in UserDefaults; the login item is owned by
+/// SMAppService, so that one is read back from the system rather than stored.
+final class ConfigHandler {
+
+    private enum Key {
+        static let sleepMode = "sleepMode"
+        static let autoOffMinutes = "autoOffMinutes"
+        static let activateOnLaunch = "activateOnLaunch"
+    }
 
     private static let logger = Logger(
         subsystem: Bundle.main.bundleIdentifier ?? "dev.sxwebdev.caffeinate",
-        category: "login-item"
+        category: "config"
     )
 
-    private static let sleepModeKey = "sleepMode"
+    private let defaults: UserDefaults
 
-    @Published var currentTab: SettingsTab = .settings
-
-    /// Mirrors Login Items. SMAppService owns this state, so there is nothing to
-    /// persist ourselves: the value is re-read from the system on every launch.
-    @Published var atLogin: Bool
-
-    /// One scalar preference, so UserDefaults rather than a config file of our own.
-    /// didSet does not run during init, which is exactly what we want here.
-    @Published var sleepMode: SleepMode {
-        didSet {
-            UserDefaults.standard.set(sleepMode.rawValue, forKey: Self.sleepModeKey)
-        }
+    init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
     }
 
-    let macOS13: Bool
-
-    init() {
-        if #available(macOS 13.0, *) {
-            macOS13 = true
-        } else {
-            macOS13 = false
+    var sleepMode: SleepMode {
+        get {
+            defaults.string(forKey: Key.sleepMode)
+                .flatMap(SleepMode.init(rawValue:)) ?? .keepDisplayOn
         }
-        atLogin = ConfigHandler.loginItemEnabled
-        sleepMode = UserDefaults.standard.string(forKey: ConfigHandler.sleepModeKey)
-            .flatMap(SleepMode.init(rawValue:)) ?? .keepDisplayOn
+        set { defaults.set(newValue.rawValue, forKey: Key.sleepMode) }
     }
 
-    private static var loginItemEnabled: Bool {
+    /// integer(forKey:) yields 0 for a missing or non-numeric entry, so a corrupt
+    /// preference degrades to "no timer" instead of failing.
+    var autoOffDelay: AutoOffDelay {
+        get { AutoOffDelay(minutes: defaults.integer(forKey: Key.autoOffMinutes)) }
+        set { defaults.set(newValue.minutes, forKey: Key.autoOffMinutes) }
+    }
+
+    var activateOnLaunch: Bool {
+        get { defaults.bool(forKey: Key.activateOnLaunch) }
+        set { defaults.set(newValue, forKey: Key.activateOnLaunch) }
+    }
+
+    // MARK: - Login item
+
+    var isLoginItemSupported: Bool {
+        if #available(macOS 13.0, *) { return true }
+        return false
+    }
+
+    var atLogin: Bool {
         guard #available(macOS 13.0, *) else { return false }
         return SMAppService.mainApp.status == .enabled
     }
 
-    func applyAtLogin() {
-        guard #available(macOS 13.0, *) else { return }
+    /// Returns the state the system actually ended up in, so a failure cannot
+    /// leave the menu claiming something untrue.
+    @discardableResult
+    func setAtLogin(_ enabled: Bool) -> Bool {
+        guard #available(macOS 13.0, *) else { return false }
         do {
-            if atLogin {
+            if enabled {
                 try SMAppService.mainApp.register()
             } else {
                 try SMAppService.mainApp.unregister()
@@ -99,17 +167,6 @@ final class ConfigHandler: ObservableObject {
         } catch {
             Self.logger.error("Failed to update the login item: \(error.localizedDescription, privacy: .public)")
         }
-        // Snap back to what the system actually reports so a failed register or
-        // unregister cannot leave the checkbox claiming something untrue. This
-        // settles after one extra pass: the corrected value already matches the
-        // system, so the follow-up call finds nothing to change.
-        let actual = ConfigHandler.loginItemEnabled
-        if atLogin != actual {
-            atLogin = actual
-        }
-    }
-
-    func quitApp() {
-        NSApplication.shared.terminate(nil)
+        return atLogin
     }
 }

@@ -1,0 +1,36 @@
+/* Status item tooltip */
+"Caffeinate is not active" = "Caffeinate 未启用";
+"Caffeinate is active — the display stays on" = "Caffeinate 已启用 — 屏幕保持开启";
+"Caffeinate is active — the system stays awake" = "Caffeinate 已启用 — 系统保持唤醒";
+
+/* Menu */
+"Keep the Mac awake" = "保持 Mac 唤醒";
+"Turns off in %@" = "%@ 后关闭";
+"Mode" = "模式";
+"Turn Off After" = "定时关闭";
+"Custom…" = "自定义…";
+"Activate on Launch" = "启动时自动启用";
+"Start at Login" = "登录时启动";
+"Requires macOS 13 or later. Add the app to Login Items in System Settings instead." = "需要 macOS 13 或更高版本。请在“系统设置”的“登录项”中手动添加此应用。";
+"About Caffeinate…" = "关于 Caffeinate…";
+"Quit Caffeinate" = "退出 Caffeinate";
+
+/* Sleep modes */
+"Keep the display on" = "保持屏幕开启";
+"Let the display sleep" = "允许屏幕关闭";
+
+/* Auto-off delay (other durations come from DateComponentsFormatter) */
+"Indefinitely" = "不限时";
+
+/* Custom duration prompt */
+"Turn off after" = "定时关闭";
+"Enter a number of minutes between 1 and %d." = "请输入 1 到 %d 之间的分钟数。";
+"Set" = "设定";
+"Cancel" = "取消";
+
+/* About window */
+"About Caffeinate" = "关于 Caffeinate";
+"Version: %@" = "版本：%@";
+"Author: sxwebdev" = "作者：sxwebdev";
+"GitHub" = "GitHub";
+"Caffeinate app icon" = "Caffeinate 应用图标";

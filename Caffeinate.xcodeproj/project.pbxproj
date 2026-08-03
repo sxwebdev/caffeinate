@@ -13,10 +13,13 @@
 		DB4005452909447F00B32892 /* Appdelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB4005442909447F00B32892 /* Appdelegate.swift */; };
 		DB6B90B2290966B900627F78 /* About.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6B90B1290966B900627F78 /* About.swift */; };
 		DB6B90B4290966E000627F78 /* Utility.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6B90B3290966E000627F78 /* Utility.swift */; };
-		DB6B90B9290967D400627F78 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6B90B6290967D400627F78 /* SettingsView.swift */; };
-		DB6B90BA290967D400627F78 /* SettingsTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6B90B7290967D400627F78 /* SettingsTabView.swift */; };
-		DB6B90BB290967D400627F78 /* Toolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6B90B8290967D400627F78 /* Toolbar.swift */; };
+		DBAA0002290939F400B32892 /* SleepBlocker.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBAA0001290939F400B32892 /* SleepBlocker.swift */; };
 		DB6B90BF290968F700627F78 /* ConfigHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6B90BD290968F600627F78 /* ConfigHandler.swift */; };
+		DBAA0104290939F400B32892 /* SleepBlockerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBAA0103290939F400B32892 /* SleepBlockerTests.swift */; };
+		DBAA0106290939F400B32892 /* ConfigHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBAA0105290939F400B32892 /* ConfigHandlerTests.swift */; };
+		DBAA010D290939F400B32892 /* SleepBlocker.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBAA0001290939F400B32892 /* SleepBlocker.swift */; };
+		DBAA010E290939F400B32892 /* ConfigHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6B90BD290968F600627F78 /* ConfigHandler.swift */; };
+		DBAA0203290939F400B32892 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = DBAA0200290939F400B32892 /* Localizable.strings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,14 +31,30 @@
 		DB4005442909447F00B32892 /* Appdelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Appdelegate.swift; sourceTree = "<group>"; };
 		DB6B90B1290966B900627F78 /* About.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = About.swift; path = Caffeinate/Settings/About.swift; sourceTree = SOURCE_ROOT; };
 		DB6B90B3290966E000627F78 /* Utility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utility.swift; sourceTree = "<group>"; };
-		DB6B90B6290967D400627F78 /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		DB6B90B7290967D400627F78 /* SettingsTabView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsTabView.swift; sourceTree = "<group>"; };
-		DB6B90B8290967D400627F78 /* Toolbar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Toolbar.swift; sourceTree = "<group>"; };
+		DBAA0001290939F400B32892 /* SleepBlocker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepBlocker.swift; sourceTree = "<group>"; };
 		DB6B90BD290968F600627F78 /* ConfigHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigHandler.swift; sourceTree = "<group>"; };
+		DBAA0101290939F400B32892 /* CaffeinateTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CaffeinateTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		DBAA0103290939F400B32892 /* SleepBlockerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepBlockerTests.swift; sourceTree = "<group>"; };
+		DBAA0105290939F400B32892 /* ConfigHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigHandlerTests.swift; sourceTree = "<group>"; };
+		DBAA0201290939F400B32892 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		DBAA0202290939F400B32892 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
+		DBAA0204290939F400B32892 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = "de.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		DBAA0205290939F400B32892 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = "es.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		DBAA0206290939F400B32892 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = "fr.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		DBAA0207290939F400B32892 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		DBAA0208290939F400B32892 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = "ja.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		DBAA0209290939F400B32892 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = "ar.lproj/Localizable.strings"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		DB40052D290939F400B32892 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DBAA0108290939F400B32892 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -50,6 +69,7 @@
 			children = (
 				DB400532290939F400B32892 /* Caffeinate */,
 				DB400531290939F400B32892 /* Products */,
+				DBAA0102290939F400B32892 /* CaffeinateTests */,
 			);
 			sourceTree = "<group>";
 		};
@@ -57,6 +77,7 @@
 			isa = PBXGroup;
 			children = (
 				DB400530290939F400B32892 /* Caffeinate.app */,
+				DBAA0101290939F400B32892 /* CaffeinateTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -68,8 +89,10 @@
 				DB400533290939F400B32892 /* CaffeinateApp.swift */,
 				DB4005442909447F00B32892 /* Appdelegate.swift */,
 				DB6B90B3290966E000627F78 /* Utility.swift */,
+				DBAA0001290939F400B32892 /* SleepBlocker.swift */,
 				DB400537290939F600B32892 /* Assets.xcassets */,
 				DB40053C290939F600B32892 /* Caffeinate.entitlements */,
+				DBAA0200290939F400B32892 /* Localizable.strings */,
 				DB400539290939F600B32892 /* Preview Content */,
 			);
 			path = Caffeinate;
@@ -88,11 +111,17 @@
 			children = (
 				DB6B90BD290968F600627F78 /* ConfigHandler.swift */,
 				DB6B90B1290966B900627F78 /* About.swift */,
-				DB6B90B6290967D400627F78 /* SettingsView.swift */,
-				DB6B90B7290967D400627F78 /* SettingsTabView.swift */,
-				DB6B90B8290967D400627F78 /* Toolbar.swift */,
 			);
 			path = Settings;
+			sourceTree = "<group>";
+		};
+		DBAA0102290939F400B32892 /* CaffeinateTests */ = {
+			isa = PBXGroup;
+			children = (
+				DBAA0103290939F400B32892 /* SleepBlockerTests.swift */,
+				DBAA0105290939F400B32892 /* ConfigHandlerTests.swift */,
+			);
+			path = CaffeinateTests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -115,6 +144,23 @@
 			productReference = DB400530290939F400B32892 /* Caffeinate.app */;
 			productType = "com.apple.product-type.application";
 		};
+		DBAA0100290939F400B32892 /* CaffeinateTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DBAA010A290939F400B32892 /* Build configuration list for PBXNativeTarget "CaffeinateTests" */;
+			buildPhases = (
+				DBAA0107290939F400B32892 /* Sources */,
+				DBAA0108290939F400B32892 /* Frameworks */,
+				DBAA0109290939F400B32892 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CaffeinateTests;
+			productName = CaffeinateTests;
+			productReference = DBAA0101290939F400B32892 /* CaffeinateTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -136,6 +182,13 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				ru,
+				de,
+				es,
+				fr,
+				"zh-Hans",
+				ja,
+				ar,
 				Base,
 			);
 			mainGroup = DB400527290939F400B32892;
@@ -144,6 +197,7 @@
 			projectRoot = "";
 			targets = (
 				DB40052F290939F400B32892 /* Caffeinate */,
+				DBAA0100290939F400B32892 /* CaffeinateTests */,
 			);
 		};
 /* End PBXProject section */
@@ -155,6 +209,14 @@
 			files = (
 				DB40053B290939F600B32892 /* Preview Assets.xcassets in Resources */,
 				DB400538290939F600B32892 /* Assets.xcassets in Resources */,
+				DBAA0203290939F400B32892 /* Localizable.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DBAA0109290939F400B32892 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -165,18 +227,45 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DB6B90BB290967D400627F78 /* Toolbar.swift in Sources */,
 				DB6B90B4290966E000627F78 /* Utility.swift in Sources */,
+				DBAA0002290939F400B32892 /* SleepBlocker.swift in Sources */,
 				DB4005452909447F00B32892 /* Appdelegate.swift in Sources */,
 				DB6B90BF290968F700627F78 /* ConfigHandler.swift in Sources */,
 				DB6B90B2290966B900627F78 /* About.swift in Sources */,
 				DB400534290939F400B32892 /* CaffeinateApp.swift in Sources */,
-				DB6B90BA290967D400627F78 /* SettingsTabView.swift in Sources */,
-				DB6B90B9290967D400627F78 /* SettingsView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DBAA0107290939F400B32892 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DBAA0104290939F400B32892 /* SleepBlockerTests.swift in Sources */,
+				DBAA0106290939F400B32892 /* ConfigHandlerTests.swift in Sources */,
+				DBAA010D290939F400B32892 /* SleepBlocker.swift in Sources */,
+				DBAA010E290939F400B32892 /* ConfigHandler.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		DBAA0200290939F400B32892 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				DBAA0201290939F400B32892 /* en */,
+				DBAA0202290939F400B32892 /* ru */,
+				DBAA0204290939F400B32892 /* de */,
+				DBAA0205290939F400B32892 /* es */,
+				DBAA0206290939F400B32892 /* fr */,
+				DBAA0207290939F400B32892 /* zh-Hans */,
+				DBAA0208290939F400B32892 /* ja */,
+				DBAA0209290939F400B32892 /* ar */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		DB40053D290939F600B32892 /* Debug */ = {
@@ -360,6 +449,34 @@
 			};
 			name = Release;
 		};
+		DBAA010B290939F400B32892 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.sxwebdev.caffeinateTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		DBAA010C290939F400B32892 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.sxwebdev.caffeinateTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -377,6 +494,15 @@
 			buildConfigurations = (
 				DB400540290939F600B32892 /* Debug */,
 				DB400541290939F600B32892 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DBAA010A290939F400B32892 /* Build configuration list for PBXNativeTarget "CaffeinateTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DBAA010B290939F400B32892 /* Debug */,
+				DBAA010C290939F400B32892 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

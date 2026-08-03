@@ -1,0 +1,36 @@
+/* Status item tooltip */
+"Caffeinate is not active" = "Caffeinate не активен";
+"Caffeinate is active — the display stays on" = "Caffeinate активен — дисплей не гаснет";
+"Caffeinate is active — the system stays awake" = "Caffeinate активен — система не спит";
+
+/* Menu */
+"Keep the Mac awake" = "Не давать Mac заснуть";
+"Turns off in %@" = "Выключится через %@";
+"Mode" = "Режим";
+"Turn Off After" = "Выключить через";
+"Custom…" = "Своё значение…";
+"Activate on Launch" = "Включать при запуске";
+"Start at Login" = "Запускать при входе в систему";
+"Requires macOS 13 or later. Add the app to Login Items in System Settings instead." = "Требуется macOS 13 или новее. Добавьте приложение в «Объекты входа» в Системных настройках вручную.";
+"About Caffeinate…" = "О программе Caffeinate…";
+"Quit Caffeinate" = "Выйти из Caffeinate";
+
+/* Sleep modes */
+"Keep the display on" = "Не гасить дисплей";
+"Let the display sleep" = "Разрешить дисплею гаснуть";
+
+/* Auto-off delay (other durations come from DateComponentsFormatter) */
+"Indefinitely" = "Бессрочно";
+
+/* Custom duration prompt */
+"Turn off after" = "Выключить через";
+"Enter a number of minutes between 1 and %d." = "Введите количество минут от 1 до %d.";
+"Set" = "Задать";
+"Cancel" = "Отмена";
+
+/* About window */
+"About Caffeinate" = "О программе Caffeinate";
+"Version: %@" = "Версия: %@";
+"Author: sxwebdev" = "Автор: sxwebdev";
+"GitHub" = "GitHub";
+"Caffeinate app icon" = "Иконка приложения Caffeinate";

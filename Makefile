@@ -21,9 +21,16 @@ endif
 TEAM_ID ?= $(shell security find-certificate -c "$(SIGN_IDENTITY)" -p 2>/dev/null | \
 	openssl x509 -noout -subject 2>/dev/null | tr ',' '\n' | sed -n 's/.*OU=//p' | head -1)
 
-.PHONY: all build install uninstall run stop clean release
+.PHONY: all build test install uninstall run stop clean release
 
 all: build
+
+## Run the unit tests
+test:
+	xcodebuild test -project $(PROJECT) -scheme $(SCHEME) \
+		-destination 'platform=macOS' \
+		-derivedDataPath $(BUILD_DIR) \
+		CODE_SIGNING_ALLOWED=NO
 
 ## Build a signed Release into ./build
 build:

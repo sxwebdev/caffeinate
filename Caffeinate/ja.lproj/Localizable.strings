@@ -1,0 +1,36 @@
+/* Status item tooltip */
+"Caffeinate is not active" = "Caffeinate は無効です";
+"Caffeinate is active — the display stays on" = "Caffeinate は有効 — ディスプレイは点灯したままです";
+"Caffeinate is active — the system stays awake" = "Caffeinate は有効 — システムはスリープしません";
+
+/* Menu */
+"Keep the Mac awake" = "Mac をスリープさせない";
+"Turns off in %@" = "%@ 後にオフ";
+"Mode" = "モード";
+"Turn Off After" = "オフにするまでの時間";
+"Custom…" = "カスタム…";
+"Activate on Launch" = "起動時に有効にする";
+"Start at Login" = "ログイン時に開く";
+"Requires macOS 13 or later. Add the app to Login Items in System Settings instead." = "macOS 13 以降が必要です。「システム設定」の「ログイン項目」に手動で追加してください。";
+"About Caffeinate…" = "Caffeinate について…";
+"Quit Caffeinate" = "Caffeinate を終了";
+
+/* Sleep modes */
+"Keep the display on" = "ディスプレイを点灯したままにする";
+"Let the display sleep" = "ディスプレイのスリープを許可する";
+
+/* Auto-off delay (other durations come from DateComponentsFormatter) */
+"Indefinitely" = "無期限";
+
+/* Custom duration prompt */
+"Turn off after" = "オフにするまでの時間";
+"Enter a number of minutes between 1 and %d." = "1 から %d までの分数を入力してください。";
+"Set" = "設定";
+"Cancel" = "キャンセル";
+
+/* About window */
+"About Caffeinate" = "Caffeinate について";
+"Version: %@" = "バージョン: %@";
+"Author: sxwebdev" = "作成者: sxwebdev";
+"GitHub" = "GitHub";
+"Caffeinate app icon" = "Caffeinate アプリアイコン";
