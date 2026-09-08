@@ -24,6 +24,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     let blocker = SleepBlocker()
 
     private var statusBarItem: NSStatusItem?
+    private var statusMenu: NSMenu?
     private var expiryTimer: Timer?
     private var aboutWindow: NSWindow?
 
@@ -34,8 +35,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         // We drive every item's enabled state ourselves; AppKit's automatic handling
         // would re-enable the section headers and the macOS 12 login-item row.
         menu.autoenablesItems = false
-        // Assigning a menu makes both mouse buttons open it, which is what we want.
-        item.menu = menu
+        // Keeping the menu off the item lets the button distinguish the two mouse
+        // buttons: a left click toggles the assertion and a right click opens the
+        // menu. The menu is assigned only while AppKit is displaying it so it keeps
+        // the native status-item positioning and highlight behaviour.
+        item.button?.target = self
+        item.button?.action = #selector(statusItemClicked(_:))
+        item.button?.sendAction(on: [.leftMouseUp, .rightMouseUp])
+        statusMenu = menu
         statusBarItem = item
 
         installMainMenu()
@@ -226,6 +233,18 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     // MARK: - Actions
+
+    @objc private func statusItemClicked(_ sender: NSStatusBarButton) {
+        guard NSApp.currentEvent?.type == .rightMouseUp else {
+            toggleActive()
+            return
+        }
+
+        guard let item = statusBarItem, let menu = statusMenu else { return }
+        item.menu = menu
+        sender.performClick(nil)
+        item.menu = nil
+    }
 
     @objc private func toggleActive() {
         if blocker.isActive {

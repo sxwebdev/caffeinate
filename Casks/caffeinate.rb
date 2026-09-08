@@ -30,9 +30,9 @@ cask "caffeinate" do
   # repository and running `brew trust` on it is the point where that is agreed to.
   # `xattr -d -r` exits 0 when the attribute is already absent, so this is a no-op
   # if a future build is properly signed.
-  postflight do
-    system_command "/usr/bin/xattr",
-                   args: ["-d", "-r", "com.apple.quarantine", "#{appdir}/Caffeinate.app"]
+  postflight_steps do
+    run "/usr/bin/xattr",
+        args: ["-d", "-r", "com.apple.quarantine", "{{appdir}}/Caffeinate.app"]
   end
 
   # Start at login is deliberately left alone. Homebrew runs the uninstall stanza on

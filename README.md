@@ -4,9 +4,9 @@ A macOS menubar app to temporarily prevent the Mac from sleeping.
 
 ## How does it work
 
-Clicking the status item — with either mouse button — opens a menu holding everything
-the app does: the on/off switch, the mode, the auto-off timer, the launch options and
-Quit. The icon is a coffee cup while Caffeinate is active and `zzz` while it is not.
+Left-clicking the status item switches Caffeinate on or off. Right-clicking it opens a
+menu holding the same on/off switch, the mode, the auto-off timer, the launch options
+and Quit. The icon is a coffee cup while Caffeinate is active and `zzz` while it is not.
 
 While active, the app holds an IOKit power assertion. Two modes are available:
 
@@ -129,7 +129,7 @@ tagging.
 
 **How do I quit?**
 
-Click the menu bar item and choose Quit Caffeinate.
+Right-click the menu bar item and choose Quit Caffeinate.
 
 ## TODO
 
