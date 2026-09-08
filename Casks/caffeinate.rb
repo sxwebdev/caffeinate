@@ -3,8 +3,8 @@ cask "caffeinate" do
   # runs after it has uploaded the build. Until the first tag is pushed they point
   # at nothing, so `brew install` fails on the download rather than installing
   # something unexpected.
-  version "1.0.0"
-  sha256 "decbe2245d641deafeb647f42564455a20305fbb29c98da5b4ee4f0a94343d1e"
+  version "1.0.1"
+  sha256 "265b4e4d202ff972e5171110a8386476f9713f9b5abc7dcdc9661c7d7617bc38"
 
   url "https://github.com/sxwebdev/caffeinate/releases/download/v#{version}/Caffeinate-#{version}.zip"
   name "Caffeinate"
