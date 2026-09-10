@@ -62,14 +62,14 @@ System Settings by hand.
 ### Homebrew
 
 ```sh
+brew trust --tap https://github.com/sxwebdev/caffeinate
 brew tap sxwebdev/caffeinate https://github.com/sxwebdev/caffeinate
-brew trust --tap sxwebdev/caffeinate
 brew install --cask caffeinate
 ```
 
 The cask lives in this repository instead of a separate `homebrew-*` one, which is why
-the tap needs a URL. Homebrew will not load anything from a tap it has not been told to
-trust, hence the second line.
+the tap needs a URL. Homebrew validates the cask while adding the tap and will not load
+it before the custom remote is trusted, so the URL must be trusted first.
 
 `brew upgrade --cask caffeinate` installs newer versions. The release workflow bumps
 the cask as soon as a tag is built, so `brew update` is enough to notice one.
